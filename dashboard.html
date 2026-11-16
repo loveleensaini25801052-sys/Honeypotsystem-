@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SOC Command Center | Honeypot Monitoring System</title>
+    
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+</head>
+
+<body>
+
+<!-- SIDEBAR NAVIGATION -->
+<div class="sidebar">
+    <div>
+        <div class="brand">
+            <i class="fa-solid fa-shield-halved brand-icon"></i>
+            <h2>Cyber<span>SOC</span></h2>
+        </div>
+
+        <ul>
+            <li class="active">
+                <a href="{{ url_for('dashboard') }}"><i class="fa-solid fa-gauge-high"></i> <span>Dashboard</span></a>
+            </li>
+            <li>
+                <a href="{{ url_for('live_attacks') }}"><i class="fa-solid fa-satellite-dish"></i> <span>Live Attacks</span></a>
+            </li>
+            <li>
+                <a href="{{ url_for('commands') }}"><i class="fa-solid fa-terminal"></i> <span>Shell Commands</span></a>
+            </li>
+            <li>
+                <a href="{{ url_for('credentials') }}"><i class="fa-solid fa-key"></i> <span>Credentials</span></a>
+            </li>
+            <li>
+                <a href="{{ url_for('statistics') }}"><i class="fa-solid fa-chart-line"></i> <span>Statistics</span></a>
+            </li>
+            <li>
+                <a href="{{ url_for('reports') }}"><i class="fa-solid fa-file-invoice"></i> <span>Reports</span></a>
+            </li>
+            <li>
+                <a href="{{ url_for('settings') }}"><i class="fa-solid fa-sliders"></i> <span>Settings</span></a>
+            </li>
+            <li>
+                <a href="{{ url_for('logout') }}"><i class="fa-solid fa-right-from-bracket"></i> <span>Logout</span></a>
+            </li>
+        </ul>
+    </div>
+
+    <div class="system-status-badge">
+        <div class="pulse-dot"></div>
+        <div class="status-info">
+            <p>Honeypot Node</p>
+            <strong>COWRIE ONLINE (2222)</strong>
+        </div>
+    </div>
+</div>
+
+<!-- MAIN CONTENT AREA -->
+<div class="main">
+
+    <!-- TICKER ALERT MARQUEE -->
+    <div class="ticker-bar">
+        <span class="ticker-label">SOC FEED</span>
+        <div class="ticker-text" id="liveTickerText">
+            MONITORING ACTIVE ── HONEYPOT LISTENING ON PORT 2222 ── SYNC ENGINE RUNNING
+        </div>
+    </div>
+
+    <!-- TOP BAR -->
+    <div class="topbar">
+        <div class="topbar-title">
+            <h1><i class="fa-solid fa-user-ninja" style="color: var(--cyan-neon);"></i> Threat Intelligence Console</h1>
+            <p>Welcome Commander <strong>{{ username }}</strong> ── Real-Time Cowrie Sensor Monitoring</p>
+        </div>
+
+        <div class="top-right">
+            <div class="tech-clock" id="dateTime">⏱ --:--:--</div>
+            <button class="btn-cyber" id="audioToggleBtn" onclick="toggleAudioAlert()">
+                🔇 Sound Alert: OFF
+            </button>
+            <button class="btn-cyber" onclick="location.reload()">
+                <i class="fa-solid fa-rotate"></i> Refresh
+            </button>
+        </div>
+    </div>
+
+    <!-- SOC METRIC CARDS -->
+    <div class="cards">
+        <div class="card">
+            <div class="card-header">
+                <span class="card-title">Total Attacks</span>
+                <i class="fa-solid fa-bug card-icon"></i>
+            </div>
+            <div class="card-value" id="totalAttacksVal">{{ total_attacks }}</div>
+            <div class="card-subtext"><i class="fa-solid fa-clock-rotate-left"></i> Recorded since deployment</div>
+        </div>
+
+        <div class="card card-warning">
+            <div class="card-header">
+                <span class="card-title">Today's Attacks</span>
+                <i class="fa-solid fa-calendar-day card-icon"></i>
+            </div>
+            <div class="card-value" id="todayAttacksVal">{{ today_attacks }}</div>
+            <div class="card-subtext"><i class="fa-solid fa-fire"></i> Detected last 24h</div>
+        </div>
+
+        <div class="card">
+            <div class="card-header">
+                <span class="card-title">Unique Attackers</span>
+                <i class="fa-solid fa-network-wired card-icon"></i>
+            </div>
+            <div class="card-value" id="uniqueIpsVal">{{ unique_ips }}</div>
+            <div class="card-subtext"><i class="fa-solid fa-globe"></i> Distinct IP Addresses</div>
+        </div>
+
+        <div class="card card-danger">
+            <div class="card-header">
+                <span class="card-title">Honeypot Breaches</span>
+                <i class="fa-solid fa-skull-crossbones card-icon"></i>
+            </div>
+            <div class="card-value" id="successfulBreachesVal">{{ successful_breaches }}</div>
+            <div class="card-subtext"><i class="fa-solid fa-triangle-exclamation"></i> Compromised SSH sessions</div>
+        </div>
+    </div>
+
+    <!-- SOC GRID: RADAR & LIVE TERMINAL LOG STREAM -->
+    <div class="soc-grid">
+        
+        <!-- Live Terminal Stream -->
+        <div class="soc-widget">
+            <div class="widget-header">
+                <h3><i class="fa-solid fa-terminal"></i> Real-Time Terminal Activity Stream</h3>
+                <span class="badge badge-success"><i class="fa-solid fa-circle"></i> Live Sync</span>
+            </div>
+            
+            <div class="terminal-window" id="terminalWindow">
+                <div class="terminal-line">
+                    <span class="terminal-timestamp">[SYSTEM]</span>
+                    <span class="terminal-prompt">&gt;</span>
+                    <span class="terminal-text">Initializing Honeypot SOC Stream... Connected to Cowrie log daemon.</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Threat Origin Radar -->
+        <div class="soc-widget">
+            <div class="widget-header">
+                <h3><i class="fa-solid fa-crosshairs"></i> Target Origin Radar Scanner</h3>
+                <span class="badge badge-high">Scanning Port 2222</span>
+            </div>
+
+            <div class="radar-container">
+                <div class="radar-sweep">
+                    <div class="radar-crosshair-h"></div>
+                    <div class="radar-crosshair-v"></div>
+                    <div class="radar-ring radar-ring-1"></div>
+                    <div class="radar-ring radar-ring-2"></div>
+                    <div class="radar-line"></div>
+
+                    <!-- Animated target dots simulating attacker nodes -->
+                    <div class="target-dot" style="top: 30%; left: 65%;"></div>
+                    <div class="target-dot" style="top: 70%; left: 25%;"></div>
+                    <div class="target-dot" style="top: 45%; left: 40%;"></div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- RECENT ATTACKS TABLE -->
+    <div class="table-section">
+        <div class="widget-header" style="margin-bottom: 12px;">
+            <h3><i class="fa-solid fa-list-check"></i> Recent Intrusion Attempts</h3>
+            <a href="{{ url_for('live_attacks') }}" class="btn-cyber" style="font-size: 12px; padding: 6px 12px;">
+                View All Live Stream <i class="fa-solid fa-arrow-right"></i>
+            </a>
+        </div>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>IP Address</th>
+                    <th>Username</th>
+                    <th>Password</th>
+                    <th>Country</th>
+                    <th>Date & Time</th>
+                    <th>Threat Level</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+            <tbody id="recentAttacksTable">
+                {% if recent_attacks %}
+                    {% for attack in recent_attacks %}
+                    <tr>
+                        <td><strong style="color:var(--cyan-neon)">{{ attack.ip_address }}</strong></td>
+                        <td><span class="code-pill">{{ attack.username }}</span></td>
+                        <td><span class="code-pill">{{ attack.password }}</span></td>
+                        <td>{{ attack.country }}</td>
+                        <td>{{ attack.date }} {{ attack.time }}</td>
+                        <td>
+                            {% if attack.threat_level == "CRITICAL" %}
+                                <span class="badge badge-critical">CRITICAL</span>
+                            {% elif attack.threat_level == "HIGH" %}
+                                <span class="badge badge-high">HIGH</span>
+                            {% else %}
+                                <span class="badge badge-medium">MEDIUM</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if attack.status == "SUCCESS" %}
+                                <span class="badge badge-success">BREACHED</span>
+                            {% else %}
+                                <span class="badge badge-failed">FAILED</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                {% else %}
+                    <tr>
+                        <td colspan="7" style="text-align: center; color: var(--text-muted); padding: 30px;">
+                            No attack logs detected yet. Run standard attack simulation: <code>ssh root@&lt;victim_ip&gt; -p 2222</code>
+                        </td>
+                    </tr>
+                {% endif %}
+            </tbody>
+        </table>
+    </div>
+
+</div>
+
+<script src="{{ url_for('static', filename='js/dashboard_live.js') }}"></script>
+</body>
+</html>

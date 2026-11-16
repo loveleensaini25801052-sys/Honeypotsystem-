@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Live Threat Stream | Honeypot Monitoring System</title>
+    
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+</head>
+
+<body>
+
+<!-- SIDEBAR NAVIGATION -->
+<div class="sidebar">
+    <div>
+        <div class="brand">
+            <i class="fa-solid fa-shield-halved brand-icon"></i>
+            <h2>Cyber<span>SOC</span></h2>
+        </div>
+
+        <ul>
+            <li>
+                <a href="{{ url_for('dashboard') }}"><i class="fa-solid fa-gauge-high"></i> <span>Dashboard</span></a>
+            </li>
+            <li class="active">
+                <a href="{{ url_for('live_attacks') }}"><i class="fa-solid fa-satellite-dish"></i> <span>Live Attacks</span></a>
+            </li>
+            <li>
+                <a href="{{ url_for('commands') }}"><i class="fa-solid fa-terminal"></i> <span>Shell Commands</span></a>
+            </li>
+            <li>
+                <a href="{{ url_for('credentials') }}"><i class="fa-solid fa-key"></i> <span>Credentials</span></a>
+            </li>
+            <li>
+                <a href="{{ url_for('statistics') }}"><i class="fa-solid fa-chart-line"></i> <span>Statistics</span></a>
+            </li>
+            <li>
+                <a href="{{ url_for('reports') }}"><i class="fa-solid fa-file-invoice"></i> <span>Reports</span></a>
+            </li>
+            <li>
+                <a href="{{ url_for('settings') }}"><i class="fa-solid fa-sliders"></i> <span>Settings</span></a>
+            </li>
+            <li>
+                <a href="{{ url_for('logout') }}"><i class="fa-solid fa-right-from-bracket"></i> <span>Logout</span></a>
+            </li>
+        </ul>
+    </div>
+
+    <div class="system-status-badge">
+        <div class="pulse-dot"></div>
+        <div class="status-info">
+            <p>Honeypot Node</p>
+            <strong>COWRIE ONLINE (2222)</strong>
+        </div>
+    </div>
+</div>
+
+<!-- MAIN CONTENT AREA -->
+<div class="main">
+
+    <!-- TOP BAR -->
+    <div class="topbar">
+        <div class="topbar-title">
+            <h1><i class="fa-solid fa-satellite-dish" style="color: var(--cyan-neon);"></i> Real-Time Attack Stream</h1>
+            <p>Live Inbound Traffic & Shell Intrusion Monitoring</p>
+        </div>
+
+        <div class="top-right">
+            <input type="text" id="searchInput" class="search-input" placeholder="🔍 Search IP, User, Password, Country..." onkeyup="searchTable()">
+            <button class="btn-cyber" onclick="fetchFilteredAttacks()">
+                <i class="fa-solid fa-rotate"></i> Sync Feed
+            </button>
+        </div>
+    </div>
+
+    <!-- FILTER BAR -->
+    <div class="filter-bar">
+        <button class="filter-btn active" id="btn-all" onclick="setFilter('ALL')">
+            <i class="fa-solid fa-globe"></i> All Traffic
+        </button>
+        <button class="filter-btn" id="btn-success" onclick="setFilter('SUCCESS')">
+            <i class="fa-solid fa-skull-crossbones" style="color: var(--green-matrix);"></i> Breached / Success
+        </button>
+        <button class="filter-btn" id="btn-failed" onclick="setFilter('FAILED')">
+            <i class="fa-solid fa-shield-xmark" style="color: var(--red-threat);"></i> Failed Attempts
+        </button>
+        <button class="filter-btn" id="btn-high" onclick="setFilter('HIGH')">
+            <i class="fa-solid fa-triangle-exclamation" style="color: var(--amber-warning);"></i> High / Critical Threat
+        </button>
+    </div>
+
+    <!-- LIVE ATTACK LOGS TABLE -->
+    <div class="table-section">
+        <table>
+            <thead>
+                <tr>
+                    <th>Attacker IP</th>
+                    <th>Target User</th>
+                    <th>Password Tried</th>
+                    <th>Origin Country</th>
+                    <th>Timestamp</th>
+                    <th>Status</th>
+                    <th>Threat Rating</th>
+                    <th>Executed Command</th>
+                </tr>
+            </thead>
+            <tbody id="attackTableBody">
+                {% if attacks %}
+                    {% for attack in attacks %}
+                    <tr>
+                        <td><strong style="color:var(--cyan-neon)">{{ attack["ip_address"] }}</strong></td>
+                        <td><span class="code-pill">{{ attack["username"] }}</span></td>
+                        <td><span class="code-pill">{{ attack["password"] }}</span></td>
+                        <td>{{ attack["country"] }}</td>
+                        <td>{{ attack["date"] }} {{ attack["time"] }}</td>
+                        <td>
+                            {% if attack["status"] == "SUCCESS" %}
+                                <span class="badge badge-success">SUCCESS</span>
+                            {% else %}
+                                <span class="badge badge-failed">FAILED</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if attack["threat_level"] == "CRITICAL" %}
+                                <span class="badge badge-critical">CRITICAL</span>
+                            {% elif attack["threat_level"] == "HIGH" %}
+                                <span class="badge badge-high">HIGH</span>
+                            {% else %}
+                                <span class="badge badge-medium">MEDIUM</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if attack["command"] %}
+                                <span class="code-pill">{{ attack["command"] }}</span>
+                            {% else %}
+                                <span style="color:var(--text-muted)">-</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                {% else %}
+                    <tr>
+                        <td colspan="8" style="text-align:center; color: var(--text-muted); padding:30px;">
+                            No attack logs found.
+                        </td>
+                    </tr>
+                {% endif %}
+            </tbody>
+        </table>
+    </div>
+
+</div>
+
+<script src="{{ url_for('static', filename='js/live_attacks.js') }}"></script>
+</body>
+</html>

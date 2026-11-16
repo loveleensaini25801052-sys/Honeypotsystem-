@@ -1,0 +1,198 @@
+/* ==========================================================================
+   AUTHENTICATION PAGES (LOGIN & REGISTER) - CYBER SOC THEME
+   ========================================================================== */
+
+@import url('https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600&family=Rajdhani:wght@600;700&family=Inter:wght@400;500;600&display=swap');
+
+:root {
+    --bg-dark: #070a0f;
+    --panel-bg: #0d131d;
+    --panel-border: rgba(0, 243, 255, 0.2);
+    --cyan-neon: #00f3ff;
+    --cyan-glow: rgba(0, 243, 255, 0.35);
+    --red-threat: #ff0055;
+    --green-matrix: #00ff66;
+    --text-primary: #e2e8f0;
+    --text-muted: #8b9bb4;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    background-color: var(--bg-dark);
+    background-image: 
+        radial-gradient(circle at 50% 50%, rgba(0, 243, 255, 0.05) 0%, transparent 60%),
+        linear-gradient(rgba(0, 243, 255, 0.02) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(0, 243, 255, 0.02) 1px, transparent 1px);
+    background-size: 100% 100%, 30px 30px, 30px 30px;
+    font-family: 'Inter', sans-serif;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    padding: 20px;
+    color: var(--text-primary);
+}
+
+.login-container {
+    width: 100%;
+    max-width: 440px;
+}
+
+.login-card {
+    background: var(--panel-bg);
+    border: 1px solid var(--panel-border);
+    border-radius: 16px;
+    padding: 40px;
+    text-align: center;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.6), 0 0 25px rgba(0, 243, 255, 0.12);
+    position: relative;
+    overflow: hidden;
+}
+
+.login-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 3px;
+    background: linear-gradient(90deg, transparent, var(--cyan-neon), transparent);
+}
+
+.logo {
+    font-size: 54px;
+    color: var(--cyan-neon);
+    margin-bottom: 16px;
+    filter: drop-shadow(0 0 12px var(--cyan-glow));
+    animation: iconPulse 3s infinite alternate;
+}
+
+h1 {
+    font-family: 'Rajdhani', sans-serif;
+    color: #ffffff;
+    font-size: 26px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    margin-bottom: 6px;
+}
+
+p {
+    color: var(--text-muted);
+    font-size: 14px;
+    margin-bottom: 28px;
+}
+
+.input-box {
+    display: flex;
+    align-items: center;
+    background: #04060a;
+    border: 1px solid var(--panel-border);
+    border-radius: 10px;
+    padding: 12px 16px;
+    margin-bottom: 18px;
+    transition: all 0.25s ease;
+}
+
+.input-box:focus-within {
+    border-color: var(--cyan-neon);
+    box-shadow: 0 0 12px var(--cyan-glow);
+}
+
+.input-box i {
+    color: var(--cyan-neon);
+    font-size: 18px;
+    margin-right: 12px;
+    width: 20px;
+}
+
+.input-box input {
+    width: 100%;
+    border: none;
+    background: transparent;
+    color: #ffffff;
+    font-size: 15px;
+    outline: none;
+    font-family: 'Inter', sans-serif;
+}
+
+.input-box input::placeholder {
+    color: var(--text-muted);
+}
+
+.login-btn, .register-btn {
+    width: 100%;
+    padding: 14px;
+    background: linear-gradient(135deg, rgba(0, 243, 255, 0.25) 0%, rgba(0, 243, 255, 0.08) 100%);
+    border: 1px solid var(--cyan-neon);
+    color: var(--cyan-neon);
+    border-radius: 10px;
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 18px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    cursor: pointer;
+    transition: all 0.25s ease;
+    margin-top: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+}
+
+.login-btn:hover, .register-btn:hover {
+    background: var(--cyan-neon);
+    color: #000000;
+    box-shadow: 0 0 20px var(--cyan-glow);
+    transform: translateY(-2px);
+}
+
+.alert-error {
+    background: rgba(255, 0, 85, 0.15);
+    border: 1px solid var(--red-threat);
+    color: var(--red-threat);
+    padding: 10px;
+    border-radius: 8px;
+    font-size: 13px;
+    margin-bottom: 18px;
+}
+
+.account-link {
+    margin-top: 24px;
+    font-size: 14px;
+    color: var(--text-muted);
+}
+
+.account-link a {
+    color: var(--cyan-neon);
+    text-decoration: none;
+    font-weight: 600;
+}
+
+.account-link a:hover {
+    text-decoration: underline;
+}
+
+.status-footer {
+    margin-top: 24px;
+    padding-top: 16px;
+    border-top: 1px solid rgba(255, 255, 255, 0.06);
+    font-size: 12px;
+    color: var(--green-matrix);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    font-family: 'Rajdhani', sans-serif;
+    letter-spacing: 0.5px;
+}
+
+@keyframes iconPulse {
+    0% { filter: drop-shadow(0 0 5px var(--cyan-neon)); }
+    100% { filter: drop-shadow(0 0 15px var(--cyan-neon)); }
+}

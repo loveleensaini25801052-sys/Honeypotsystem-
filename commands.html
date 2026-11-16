@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Captured Shell Commands | Honeypot Monitoring System</title>
+    
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+</head>
+
+<body>
+
+<!-- SIDEBAR NAVIGATION -->
+<div class="sidebar">
+    <div>
+        <div class="brand">
+            <i class="fa-solid fa-shield-halved brand-icon"></i>
+            <h2>Cyber<span>SOC</span></h2>
+        </div>
+
+        <ul>
+            <li>
+                <a href="{{ url_for('dashboard') }}"><i class="fa-solid fa-gauge-high"></i> <span>Dashboard</span></a>
+            </li>
+            <li>
+                <a href="{{ url_for('live_attacks') }}"><i class="fa-solid fa-satellite-dish"></i> <span>Live Attacks</span></a>
+            </li>
+            <li class="active">
+                <a href="{{ url_for('commands') }}"><i class="fa-solid fa-terminal"></i> <span>Shell Commands</span></a>
+            </li>
+            <li>
+                <a href="{{ url_for('credentials') }}"><i class="fa-solid fa-key"></i> <span>Credentials</span></a>
+            </li>
+            <li>
+                <a href="{{ url_for('statistics') }}"><i class="fa-solid fa-chart-line"></i> <span>Statistics</span></a>
+            </li>
+            <li>
+                <a href="{{ url_for('reports') }}"><i class="fa-solid fa-file-invoice"></i> <span>Reports</span></a>
+            </li>
+            <li>
+                <a href="{{ url_for('settings') }}"><i class="fa-solid fa-sliders"></i> <span>Settings</span></a>
+            </li>
+            <li>
+                <a href="{{ url_for('logout') }}"><i class="fa-solid fa-right-from-bracket"></i> <span>Logout</span></a>
+            </li>
+        </ul>
+    </div>
+
+    <div class="system-status-badge">
+        <div class="pulse-dot"></div>
+        <div class="status-info">
+            <p>Honeypot Node</p>
+            <strong>COWRIE ONLINE (2222)</strong>
+        </div>
+    </div>
+</div>
+
+<!-- MAIN CONTENT AREA -->
+<div class="main">
+
+    <!-- TOP BAR -->
+    <div class="topbar">
+        <div class="topbar-title">
+            <h1><i class="fa-solid fa-code" style="color: var(--cyan-neon);"></i> Captured Attacker Shell Commands</h1>
+            <p>Interactive Terminal Payload & Command Inspection Audit</p>
+        </div>
+
+        <div class="top-right">
+            <button class="btn-cyber" onclick="location.reload()">
+                <i class="fa-solid fa-rotate"></i> Refresh Feed
+            </button>
+        </div>
+    </div>
+
+    <!-- TOP COMMAND FREQUENCY SUMMARY -->
+    <div class="soc-widget">
+        <div class="widget-header">
+            <h3><i class="fa-solid fa-fire"></i> Most Common Attacker Commands</h3>
+            <span class="badge badge-critical">Terminal Reconnaissance</span>
+        </div>
+
+        <div style="display: flex; gap: 12px; flex-wrap: wrap;">
+            {% if top_commands %}
+                {% for item in top_commands %}
+                <div style="background: #04060a; border: 1px solid var(--panel-border); padding: 10px 16px; border-radius: 8px; font-family: var(--font-code); font-size: 13px;">
+                    <span style="color: var(--cyan-neon); font-weight: bold;">{{ item.command }}</span>
+                    <span class="badge badge-medium" style="margin-left: 8px;">{{ item.frequency }}x</span>
+                </div>
+                {% endfor %}
+            {% else %}
+                <p style="color: var(--text-muted); font-size: 13px;">No commands captured yet. Once an attacker logs into the honeypot and types shell commands (e.g. <code>uname -a</code>, <code>cat /etc/passwd</code>), they will appear here!</p>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- CAPTURED COMMANDS LOG TABLE -->
+    <div class="table-section">
+        <div class="widget-header" style="margin-bottom: 14px;">
+            <h3><i class="fa-solid fa-terminal"></i> Command Input Audit History</h3>
+        </div>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>Attacker IP</th>
+                    <th>User Context</th>
+                    <th>Executed Command</th>
+                    <th>Category / MITRE Tag</th>
+                    <th>Origin Country</th>
+                    <th>Date & Time</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% if commands %}
+                    {% for item in commands %}
+                    <tr>
+                        <td><strong style="color:var(--cyan-neon)">{{ item.ip_address }}</strong></td>
+                        <td><span class="code-pill">{{ item.username }}</span></td>
+                        <td><span class="code-pill" style="color: var(--green-matrix); font-weight: 600;">{{ item.command }}</span></td>
+                        <td>
+                            {% if 'cat' in item.command or 'uname' in item.command or 'id' in item.command or 'whoami' in item.command or 'ls' in item.command %}
+                                <span class="badge badge-medium">Discovery / Recon</span>
+                            {% elif 'wget' in item.command or 'curl' in item.command or 'chmod' in item.command %}
+                                <span class="badge badge-critical">Payload / Execution</span>
+                            {% else %}
+                                <span class="badge badge-high">Interactive Shell</span>
+                            {% endif %}
+                        </td>
+                        <td>{{ item.country }}</td>
+                        <td>{{ item.date }} {{ item.time }}</td>
+                    </tr>
+                    {% endfor %}
+                {% else %}
+                    <tr>
+                        <td colspan="6" style="text-align: center; color: var(--text-muted); padding: 35px;">
+                            No shell commands logged yet. When attackers execute commands inside Cowrie, <code>sync_cowrie.py</code> will capture them here automatically.
+                        </td>
+                    </tr>
+                {% endif %}
+            </tbody>
+        </table>
+    </div>
+
+</div>
+
+</body>
+</html>

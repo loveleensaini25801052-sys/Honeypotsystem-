@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Attack Reports | Honeypot Monitoring System</title>
+    
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+</head>
+
+<body>
+
+<!-- SIDEBAR NAVIGATION -->
+<div class="sidebar">
+    <div>
+        <div class="brand">
+            <i class="fa-solid fa-shield-halved brand-icon"></i>
+            <h2>Cyber<span>SOC</span></h2>
+        </div>
+
+        <ul>
+            <li>
+                <a href="{{ url_for('dashboard') }}"><i class="fa-solid fa-gauge-high"></i> <span>Dashboard</span></a>
+            </li>
+            <li>
+                <a href="{{ url_for('live_attacks') }}"><i class="fa-solid fa-satellite-dish"></i> <span>Live Attacks</span></a>
+            </li>
+            <li>
+                <a href="{{ url_for('commands') }}"><i class="fa-solid fa-terminal"></i> <span>Shell Commands</span></a>
+            </li>
+            <li>
+                <a href="{{ url_for('credentials') }}"><i class="fa-solid fa-key"></i> <span>Credentials</span></a>
+            </li>
+            <li>
+                <a href="{{ url_for('statistics') }}"><i class="fa-solid fa-chart-line"></i> <span>Statistics</span></a>
+            </li>
+            <li class="active">
+                <a href="{{ url_for('reports') }}"><i class="fa-solid fa-file-invoice"></i> <span>Reports</span></a>
+            </li>
+            <li>
+                <a href="{{ url_for('settings') }}"><i class="fa-solid fa-sliders"></i> <span>Settings</span></a>
+            </li>
+            <li>
+                <a href="{{ url_for('logout') }}"><i class="fa-solid fa-right-from-bracket"></i> <span>Logout</span></a>
+            </li>
+        </ul>
+    </div>
+
+    <div class="system-status-badge">
+        <div class="pulse-dot"></div>
+        <div class="status-info">
+            <p>Honeypot Node</p>
+            <strong>COWRIE ONLINE (2222)</strong>
+        </div>
+    </div>
+</div>
+
+<!-- MAIN CONTENT AREA -->
+<div class="main">
+
+    <!-- TOP BAR -->
+    <div class="topbar">
+        <div class="topbar-title">
+            <h1><i class="fa-solid fa-file-csv" style="color: var(--cyan-neon);"></i> Attack Audit Reports</h1>
+            <p>Exportable Threat Log Documentation</p>
+        </div>
+
+        <div class="top-right">
+            <input type="text" id="searchInput" class="search-input" placeholder="🔍 Search reports..." onkeyup="searchReports()">
+            <button class="btn-cyber" onclick="window.location.href='/download_csv'">
+                <i class="fa-solid fa-download"></i> Export CSV
+            </button>
+        </div>
+    </div>
+
+    <!-- REPORT TABLE -->
+    <div class="table-section">
+        <table id="reportTable">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>IP Address</th>
+                    <th>Username</th>
+                    <th>Password</th>
+                    <th>Date & Time</th>
+                    <th>Status</th>
+                    <th>Threat Level</th>
+                    <th>Command</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% if attacks %}
+                    {% for attack in attacks %}
+                    <tr>
+                        <td>#{{ attack["id"] }}</td>
+                        <td><strong style="color:var(--cyan-neon)">{{ attack["ip_address"] }}</strong></td>
+                        <td><span class="code-pill">{{ attack["username"] }}</span></td>
+                        <td><span class="code-pill">{{ attack["password"] }}</span></td>
+                        <td>{{ attack["date"] }} {{ attack["time"] }}</td>
+                        <td>
+                            {% if attack["status"] == "SUCCESS" %}
+                                <span class="badge badge-success">SUCCESS</span>
+                            {% else %}
+                                <span class="badge badge-failed">FAILED</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if attack["threat_level"] == "CRITICAL" %}
+                                <span class="badge badge-critical">CRITICAL</span>
+                            {% elif attack["threat_level"] == "HIGH" %}
+                                <span class="badge badge-high">HIGH</span>
+                            {% else %}
+                                <span class="badge badge-medium">MEDIUM</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if attack["command"] %}
+                                <span class="code-pill">{{ attack["command"] }}</span>
+                            {% else %}
+                                <span style="color:var(--text-muted)">-</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                {% else %}
+                    <tr>
+                        <td colspan="8" style="text-align: center; color: var(--text-muted); padding: 30px;">
+                            No attack records available for report generation.
+                        </td>
+                    </tr>
+                {% endif %}
+            </tbody>
+        </table>
+    </div>
+
+</div>
+
+<script>
+function searchReports() {
+    let input = document.getElementById("searchInput").value.toUpperCase();
+    let table = document.getElementById("reportTable");
+    let tr = table.getElementsByTagName("tr");
+
+    for (let i = 1; i < tr.length; i++) {
+        let td = tr[i].getElementsByTagName("td");
+        let found = false;
+        for (let j = 0; j < td.length; j++) {
+            if (td[j] && td[j].innerHTML.toUpperCase().indexOf(input) > -1) {
+                found = true;
+                break;
+            }
+        }
+        tr[i].style.display = found ? "" : "none";
+    }
+}
+</script>
+
+</body>
+</html>
