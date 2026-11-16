@@ -34,23 +34,7 @@ The technologies depend on the implementation of the project. Common technologie
 - Logging – For recording suspicious activities.
 - Linux or Windows – For running the application.
 
-Features
-
-- Monitoring suspicious connections.
-- Detecting unauthorized access attempts.
-- Recording attacker activities.
-- Maintaining activity logs.
-- Analyzing security-related information.
-- Providing a controlled environment for cybersecurity testing.
-
-Advantages
-
-The Honeypot System helps security administrators understand possible attacks and suspicious activities. It provides useful information about attacker behavior and supports cybersecurity research and learning. It can also help organizations improve their security monitoring strategies.
-
-Future Scope
-
-In the future, the system can be improved by adding real-time alerts, advanced activity monitoring, graphical dashboards, automated log analysis, and machine learning-based threat detection.
-
-Conclusion
-
-The Honeypot System is a useful cybersecurity project that helps detect and analyze suspicious activities in a controlled environment. It supports security monitoring, improves awareness of cyber threats, and provides valuable information for understanding unauthorized access attempts.
+Website Link
+- Local Website: http://127.0.0.1:5000
+- Project Folder: Honeypot System
+- Technology Used: Python, Flask, SQLite, HTML, CSS and JavaScript.
